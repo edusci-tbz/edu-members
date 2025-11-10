@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>پروفایل عضو</title>
+  <style>
+    body{font-family:Tahoma, sans-serif; direction:rtl; padding:20px; max-width:800px; margin:auto}
+    .card{border:1px solid #ddd;padding:16px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+  </style>
+</head>
+<body>
+  <h1>پروفایل عضو انجمن</h1>
+  <div id="content" class="card">درحال بارگذاری...</div>
+
+<script>
+  function getParam(name){
+    const p = new URLSearchParams(window.location.search);
+    return p.get(name);
+  }
+
+  const id = getParam('id');
+  const content = document.getElementById('content');
+
+  fetch('members.json')
+    .then(r => r.json())
+    .then(list => {
+      if(!id){ content.innerHTML = '<p>کد عضو در آدرس وجود ندارد. لطفاً لینک با ?id=کد ارسال کنید.</p>'; return; }
+      const m = list.find(x => x.code === id);
+      if(!m){ content.innerHTML = '<p>عضوی با این کد پیدا نشد.</p>'; return; }
+
+      content.innerHTML = `
+        <h2>${m.name}</h2>
+        <p><strong>کد:</strong> ${m.code}</p>
+        <p><strong>رشته:</strong> ${m.dept}</p>
+        <p><strong>درباره:</strong> ${m.bio}</p>
+        <h3>فعالیت‌ها</h3>
+        <ul>${(m.activities||[]).map(a=>`<li>${a}</li>`).join('')}</ul>
+      `;
+    })
+    .catch(err => { content.innerHTML = '<p>خطا در بارگذاری اطلاعات.</p>'; console.error(err); });
+</script>
+</body>
+</html>
+Create members.json
